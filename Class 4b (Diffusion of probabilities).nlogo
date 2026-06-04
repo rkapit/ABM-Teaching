@@ -1,22 +1,22 @@
 patches-own [
-  probability
-  patch-countdown
-  occupied
+  probability ;;; THE VALUE THAT IS BEING DIFFUSED. IT IS CALLED PROBABILITY BECAUSE IT IS COMPARED AGAINST A RANDOM FLOATING VALUE 
+  patch-countdown ;;; A VALUE THAT DETERMINES FOR HOW LONG A PATCH IS COLOURED/OCCUPIED BY LITTLE GREEN DOT
+  occupied ;;; A VARIABLE THAT REGISTERED WHETHER THE PATCH IS OCCUPIED/COLOURED
 ]
 
 
 to setup
-  ca
-  reset-ticks
-
+  
+  ca ;;; CLEAR ALL 
+  reset-ticks ;;; RESET TICKS
 
 end
 
 
 to go
 
-  check-mouse
-  diffuse-probability
+  check-mouse ;;; CHECK IF THE MOUSE IS DOING SOMETHING
+  diffuse-probability ;;; DIFFUSE THE PROBABILITIES 
 
   visualise-probability
 
@@ -27,11 +27,11 @@ end
 
 to check-mouse
 
-  let cursor-location patch mouse-xcor mouse-ycor
+  let cursor-location patch mouse-xcor mouse-ycor ;;; CREATE A VARIABLE THAT IDENTIFIES WHICH PATCH THE MOUSE IS AT 
 
-  if mouse-down? [
-    ask cursor-location [
-      set probability 1
+  if mouse-down? [ ;;; IF THE MOUSE IS BEING PRESSED 
+    ask cursor-location [ ;;; ASK THE PATCH AT THAT LOCATION 
+      set probability 1 ;;; TO SET IT'S PROBABILITY TO 1
     ]
   ]
 
@@ -40,11 +40,12 @@ end
 
 to diffuse-probability
 
-  diffuse probability concentration
+  diffuse probability concentration ;;; DIFFUSE IS A PRIMITIVE THAT DIFFUSES A VARIABLE TO NEIGHBORS. HERE, IT DIFFUSES THE PROBABILITY VARIABLES AT A GLOBAL RATE (CONCENTRATION)
+  ;;; BECAUSE DIFFUSE IS CALLED EVERY TICK, THIS CONTINUES TO RUN, AND THE 'PROBABILITY' VALUE OF EVERY PATCH IS EXPONENTIALLY DIFFUSED AWAY
 
-  ask patches with [probability < .001] [
-    if random-float 1 < reach [
-      set probability 0
+  ask patches with [probability < .001] [ ;;; ASK PATCHES WITH A PROBABILITY < .001
+    if random-float 1 < reach [ ;;; IF A RANDOMLY GENERATE FLOATING VALUE BETWEEN 0 AND 1 IS HIGHER THAN REACH (I.E., THE HIGHER THIS VALUE, THE MORE LIKELY A PATCH IS TO RESET TO 0 ON THE NEXT LINE)
+      set probability 0 ;;; SET THE PROBABILITY TO 0
     ]
   ]
 
@@ -52,30 +53,28 @@ end
 
 
 
-to visualise-probability
+to visualise-probability 
 
+  let candidates patches with [probability > 0 and occupied = 0] ;;; IDENTIFY PATCHES WITH A PROBABILITY > 0 AND WHICH AREN'T CURRENTLY OCCUPIED/COLOURED
 
-
-  let candidates patches with [probability > 0 and occupied = 0]
-
-  ask candidates [
-    if random-float 1 < probability [
-      sprout 1 [
-        set shape "circle"
-        set size .75
-        set color green
+  ask candidates [ ;;; ASK THESE PATCHES 
+    if random-float 1 < probability [ ;;; IF RANDOM FLOAT (BETWEEN 0 AND 1) IS SMALL THAN [THEIR] PROBABILITY VALUE. (REMEMBER, PROBABILITY BEGINS AT 1.0)
+      sprout 1 [ ;;; THEY SPROUT A SINGLE 
+        set size .75 ;;; LITTLE
+        set color green ;;; GREEN
+        set shape "circle" ;;; DOT
       ]
-      set occupied 1
-      set patch-countdown decay-time
+      set occupied 1 ;;; THE PATCH THEN RECORDS THAT IT IS CURRENTLY OCCUPIED/COLOURED
+      set patch-countdown decay-time ;;; THEN ASK THE PATCH TO TO SET THEIR COUNT-DOWN TIMER TO THE GLOBAL VALUE IN THE GUI
     ]
   ]
 
-  ask patches with [occupied = 1][
-    set patch-countdown (patch-countdown - 1)
-    if patch-countdown <= 0 [
-      ask turtles-here [die]
-      set probability 0
-      set occupied 0
+  ask patches with [occupied = 1][ ;;; NOW ASK ALL PATCHES THAT ARE OCCUPIED/COLOURED 
+    set patch-countdown (patch-countdown - 1) ;;; TO DECREASE THEIR COUNTDOWN TIMER 
+    if patch-countdown <= 0 [ ;;; AND FOR PATCHES THAT HAVE A COUNTDOWN TIMER AT 0 OR BELOW (ALWAYS USEFUL TO PUT <=, BECAUSE SOMETIMES IF THE VALUE DROPS BELOW WITH REGISTERING AT = 0, THE FUNCTION ISN'T TRIGGERED)
+      ask turtles-here [die] ;;; THEN ASK THE LITTLE GREEN DOT (A TURTLE) TO DIE 
+      set probability 0 ;;; SET PROBABILITY TO 0
+      set occupied 0 ;;; AND SET OCCUPIED/COLOURED TO 0 (SO IT CAN BE OCCUPIED/COLOURED AGAIN)
     ]
   ]
 
