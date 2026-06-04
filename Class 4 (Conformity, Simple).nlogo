@@ -1,18 +1,10 @@
 globals [
   master-list-of-colors ;;; THIS IS A LIST OF UNIQUE COLOR VALUES
-  c-list ;;; THIS IS A LIST OF ALL THE COLOURS THAT REMAIN AT THE END OF A RUN
-
-  rolling-group-count ;;; A TOOL FOR MEASURING - AND REPORTING - GROUPS
-  group-id-list ;;; THIS IS A LIST OF GROUPS
-  group-size-list ;;; AND THEIR CORRESPONDING GROUP SIZE
 ]
 
 patches-own [
   list-of-colors ;;; PATCHES OWN A LIST OF COLOURS OF THEIR NEIGHBORS FOR REVIEWING
   count-neighbor-color ;;; THEY CAN COUNT THEIR NEIGHBORS
-
-  group ;;; THEY HAVE A GROUP ID
-  group-size ;;; AND (AT LEAST ONE OF THEM) RECORD HOW MANY ARE IN THEIR GROUP
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
